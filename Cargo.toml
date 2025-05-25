@@ -1,0 +1,9 @@
+[package]
+name = "oauth_test"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+oauth2 = "5.0.0"
+reqwest = "0.12.15"
+tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread"] }
