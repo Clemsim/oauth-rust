@@ -1,15 +1,32 @@
-#[tokio::main]
-async fn main() {
+use actix_web::{get, web, App, HttpRequest, HttpServer};
+use oauth2::{basic::BasicClient, AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, PkceCodeChallenge, RedirectUrl, Scope, TokenUrl};
+use serde::Deserialize;
+
+#[actix_web::main]
+async fn main()->std::io::Result<()> {
     println!("Hello, world!");
     oauth().await;
+        HttpServer::new(|| App::new().service(token_state))
+        .bind(("127.0.0.1", 8080))?
+        .run()
+        .await
 }
 
-use oauth2::{basic::BasicClient, http::Error, AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, PkceCodeChallenge, RedirectUrl, Scope, TokenUrl};
+#[derive(Deserialize)]
+struct Token{
+    code:String,
+    state: String
+}
 
+#[get("/token")]
+async fn token_state(tok: web::Query<Token>)->String{
+    format!("Welcome {}! and {}", tok.code, tok.state)
+
+}
 async fn oauth(){
     let client = BasicClient::new(ClientId::new("30_2w53177iozwg48ko8sokkk0sog04wwo48wosswcggk0kwks08o".into()))
         .set_client_secret(ClientSecret::new("zgha7u74vmog8808s8o404s0osoc8kk4ck8os48o048w0cwc".into()))
-        .set_redirect_uri(RedirectUrl::new("http://localhost:3000".into()).unwrap())
+        .set_redirect_uri(RedirectUrl::new("http://localhost:8080/token".into()).unwrap())
         .set_auth_uri(AuthUrl::new("https://my.centrale-assos.fr/oauth/v2/auth".into()).unwrap())
         .set_token_uri(TokenUrl::new("https://my.centrale-assos.fr/oauth/v2/token".into()).unwrap());
 
@@ -35,15 +52,6 @@ async fn oauth(){
         // Following redirects opens the client up to SSRF vulnerabilities.
         .redirect(reqwest::redirect::Policy::none())
         .build()
-        .expect("Client should build");
-
-    // Now you can trade it for an access token.
-    let token_result = client
-        .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
-        // Set the PKCE code verifier.
-        .set_pkce_verifier(pkceverifier)
-        .request_async(&http_client)
-        .await.unwrap();
-    
+        .expect("Client should build");    
 }   
 
