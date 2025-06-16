@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 actix-web = "4.11.0"
-oauth2 = "5.0.0"
-reqwest = "0.12.15"
+oauth2 = { version = "5.0.0", features = ["reqwest"] }
+reqwest = "0.12.18"
 serde = { version = "1.0.219", features = ["derive"] }
 tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread"] }
