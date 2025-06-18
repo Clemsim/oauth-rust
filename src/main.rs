@@ -9,7 +9,6 @@ type FullyconfiguredClient = BasicClient<
     EndpointNotSet,
     EndpointNotSet,
     EndpointSet>;
-
 #[actix_web::main]
 async fn main()->std::io::Result<()> {
     println!("Server starting");
@@ -91,6 +90,7 @@ async fn token_state(res: web::Query<Token_URL>, data:web::Data<App_State>)->imp
                 // For example: token_response.access_token().secret()
                 println!("Access Token: {:?}", token_response.access_token().secret());
                 // Handle the token response as needed
+                
                 HttpResponse::Ok().body(format!("Successfully exchanged code for token! Access Token (partial): {}", &token_response.access_token().secret()[..10]))
             },
             Err(e) => {
